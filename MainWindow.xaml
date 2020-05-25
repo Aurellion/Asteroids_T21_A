@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Asteroids"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" KeyDown="Window_KeyDown">
     <Grid>
         <Canvas x:Name="Zeichenfläche" HorizontalAlignment="Left" Height="347" Margin="22,23,0,0" VerticalAlignment="Top" Width="750"/>
         <Button x:Name="BTN_Start" Content="Start" HorizontalAlignment="Left" Margin="22,375,0,0" VerticalAlignment="Top" Width="75" Click="BTN_Start_Click"/>
