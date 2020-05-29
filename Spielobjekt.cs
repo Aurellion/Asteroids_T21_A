@@ -28,16 +28,35 @@ namespace Asteroids
 
         public abstract void Zeichnen(Canvas Zeichenfläche);
 
-        public void Bewegen(TimeSpan interval, Canvas Zeichenfläche)
+        public bool Bewegen(TimeSpan interval, Canvas Zeichenfläche)
         {
+            bool rausgeflogen=false;
             x += vx * interval.TotalSeconds;
             y += vy * interval.TotalSeconds;
 
-            if (x > Zeichenfläche.ActualWidth) x = 0;
-            if (x < 0) x = Zeichenfläche.ActualWidth;
+            if (x > Zeichenfläche.ActualWidth)
+                {
+                    rausgeflogen=true;
+                    x = 0;
+                }
+            if (x < 0) 
+                {
+                    rausgeflogen = true;
+                    x = Zeichenfläche.ActualWidth;
+                }
 
-            if (y > Zeichenfläche.ActualHeight) y = 0;
-            if (y < 0) y = Zeichenfläche.ActualHeight;
+            if (y > Zeichenfläche.ActualHeight)
+                {
+                    rausgeflogen=true;
+                    y = 0;
+                }
+            if (y < 0)
+                {
+                    rausgeflogen=true;
+                    y = Zeichenfläche.ActualHeight;
+                }
+
+            return rausgeflogen;
         }
 
     }
@@ -68,6 +87,12 @@ namespace Asteroids
             Canvas.SetTop(umriss, y);
             Canvas.SetLeft(umriss, x);
         }
+
+        public bool EnthältPunkt(double x, double y)
+        {
+            return umriss.RenderedGeometry.FillContains(new Point(x-this.x,y-this.y));
+        }
+
     }
 
     
@@ -141,8 +166,8 @@ namespace Asteroids
             e.Height = 5;
             e.Fill = Brushes.Red;
             Zeichenfläche.Children.Add(e);
-            Canvas.SetTop(e,y-2.5);
-            Canvas.SetLeft(e,x-2.5);
+            Canvas.SetTop(e, y-e.Height/2);
+            Canvas.SetLeft(e, x-e.Width/2);
         }
     }
 }

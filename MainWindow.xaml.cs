@@ -39,6 +39,10 @@ namespace Asteroids
         private void Animiere(object sender, EventArgs e)
         {
             Zeichenfläche.Children.Clear();
+
+            List<Torpedo> zuLöschendeTorpedos = new List<Torpedo>();
+            List<Asteroid> zuLöschendeAsteroiden = new List<Asteroid>();
+
             foreach (Asteroid item in Asteroiden)
             {
                 item.Zeichnen(Zeichenfläche);
@@ -47,21 +51,70 @@ namespace Asteroids
             Enterprise.Zeichnen(Zeichenfläche);
             Enterprise.Bewegen(timer.Interval, Zeichenfläche);
             foreach (Torpedo item in Torpedos)
-	        {
+	        {                 
                 item.Zeichnen(Zeichenfläche);
-                item.Bewegen(timer.Interval, Zeichenfläche);
+                bool rausgeflogen = item.Bewegen(timer.Interval, Zeichenfläche);
+                if(rausgeflogen)
+                {
+                    zuLöschendeTorpedos.Add(item);
+                }
 	        }
+            //Torpedos.RemoveAll(x => zuLöschendeTorpedos.Contains(x));
+            foreach (Torpedo item in zuLöschendeTorpedos)
+            {
+                Torpedos.Remove(item);
+            }
+
+            bool verloren=false;
+            foreach (Asteroid A in Asteroiden)
+            {
+                foreach (Torpedo T in Torpedos)
+                {
+                    if(A.EnthältPunkt(T.x, T.y))
+                    {
+                        zuLöschendeTorpedos.Add(T);
+                        zuLöschendeAsteroiden.Add(A);
+                    }
+                }
+                if(A.EnthältPunkt(Enterprise.x, Enterprise.y))
+                {
+                    verloren=true;
+                }
+            }
+            Torpedos.RemoveAll(t => zuLöschendeTorpedos.Contains(t));
+            Asteroiden.RemoveAll(a => zuLöschendeAsteroiden.Contains(a));
+	
+            if(verloren)
+            {
+                MessageBoxResult ergebnis;
+                ergebnis = MessageBox.Show("Noch eine Runde?","Game over!", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if(ergebnis == MessageBoxResult.Yes)
+                {
+                    SpielStarten();
+                }
+                else
+                {
+                    Application.Current.Shutdown();
+                }
+            }
         }
 
         private void BTN_Start_Click(object sender, RoutedEventArgs e)
         {
             timer.Start();
+            SpielStarten();
+            BTN_Start.IsEnabled = false;
+        }
+
+        private void SpielStarten()
+        {
+            Asteroiden.Clear();
+            Torpedos.Clear();
             for (int i = 0; i < 20; i++)
             {
                 Asteroiden.Add(new Asteroid(Zeichenfläche));
             }
             Enterprise = new Raumschiff(Zeichenfläche);
-            BTN_Start.IsEnabled = false;
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
